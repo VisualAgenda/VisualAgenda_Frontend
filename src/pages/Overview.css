@@ -1,0 +1,29 @@
+.ion-padding h2 {
+    margin-bottom:10%;
+    font-size: 3rem;
+    color: rgb(0, 0, 0);
+}
+#oben {
+    --background: rgb(0, 0, 0);
+    --background-hover: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 100%;
+    margin-left: -18px;
+}
+#vorschlag-b {
+    --background: rgb(0, 0, 0);
+    --background-hover: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 100%;
+    margin-left: -18px;
+}
+#meeting-b {
+    --background: rgb(169, 212, 206);
+    --background-hover: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 100%;
+    margin-left: -18px;
+}

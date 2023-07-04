@@ -1,0 +1,34 @@
+.watch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  margin-top: 20px;
+  margin-left: 75px;
+}
+#home {
+  font-size: 150%;
+  margin-top: 30px;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: aqua;
+}
+#settings {
+  margin-top: 30px;
+  margin-left: 30px;
+}
+#h2 {
+    margin-left: 30px;
+}
+#text2 {
+  margin-left: 30px;
+  margin-bottom: 50px;
+}
+#h5 {
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+#li {
+  margin-left: 40px;
+}

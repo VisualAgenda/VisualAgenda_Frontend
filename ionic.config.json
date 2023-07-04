@@ -1,0 +1,7 @@
+{
+  "name": "Visual Agenda",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}

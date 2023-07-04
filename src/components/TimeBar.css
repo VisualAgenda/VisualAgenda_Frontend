@@ -1,0 +1,14 @@
+.text {
+  position: absolute;
+  z-index: 6;
+  padding-left: 2%;
+  padding-top: 2%;
+}
+
+.bar {
+  position: relative;
+  
+}
+.container_row{
+  padding-bottom: 5%;
+}
