@@ -11,6 +11,22 @@ import "./Home.css";
 import "./Parti_Suggestion";
 import Background from "../components/Background";
 import ExploreContainer from "../components/ExploreContainer";
+// TODO Getalltimeslots, abspeichern anzeigen.
+
+//  TODO das muss beim navigieren auf diese seite ausgefuehrt werden und meetingID muss halt mit uebergeben werden immer. 
+/*
+
+      fetch(`http://localhost:3000/meetings/${meetingId}/timeslots`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Timeslot-Daten:", data);
+            })
+            .catch((error) => {
+                console.error("Fehler beim Abrufen des Meetings:", error);
+            });
+    };
+*/
+
 
 const Parti_Start: React.FC = () => {
   return (

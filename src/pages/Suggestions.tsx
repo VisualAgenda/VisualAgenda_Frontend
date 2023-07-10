@@ -12,6 +12,19 @@ import "./Overview.css";
 import "./Editing";
 import "./Home";
 
+// TODO Get all comments benutzen muss am anfang gemacht werden. 
+/*
+
+      fetch(`/meetings/${meetingId}/timeslots/${timeslotId}/comments`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Timeslot-Daten:", data);
+            })
+            .catch((error) => {
+                console.error("Fehler beim Abrufen des Meetings:", error);
+            });
+    };
+*/
 const Suggestions: React.FC = () => {
   return (
     <IonPage>

@@ -56,7 +56,7 @@ import {
           {/* <Background /> */}
           <div className="header">
             <IonRow>
-              <IonIcon id="home" icon={homeOutline} size="large" href></IonIcon>
+              <IonIcon id="home" icon={homeOutline} size="large"></IonIcon>
               <IonAlert
                 header="Meeting beenden!"
                 trigger="home"
@@ -85,7 +85,6 @@ import {
                 id="settings"
                 icon={settingsOutline}
                 size="large"
-                href
               ></IonIcon>
             </IonRow>
           </div>

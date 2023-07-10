@@ -7,6 +7,9 @@ import "./Home";
 import "./Suggestions";
 import "./MeetingStart";
 
+// TODO hier muss dann die daten uebergeben werden oder ein neuer get request gemacht werden auf die API musst mir sagen wie du es willst
+// wenn neuer get request musst du den admin_link oder den user_link uebergeben. aber das waere dann das selbe wie bei home.
+
 const Overview: React.FC = () => {
   const storedNumbers = localStorage.getItem("randomNumbers");
   const { number1 = 0, number2 = 0 } = storedNumbers

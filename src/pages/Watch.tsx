@@ -9,9 +9,23 @@ import {
 } from "@ionic/react";
 import React, { useState, useEffect } from "react";
 import ExploreContainer from "../components/ExploreContainer";
-import { homeOutline, settingsOutline } from "ionicons/icons";
+import { homeOutline, settingsOutline, time } from "ionicons/icons";
 // import Background from "../components/Background";
 import "./Watch.css";
+
+//TODO get timeslot by ID, abspeichern und beschreibung anzeigen dafuer muss die meetingid und die timeslot id mitgegeben werden muss direkt am start gemacht werden
+
+const handleGetTimeslot = () => {
+  fetch(`http://localhost:3000/meetings/${meetingId}/timeslots/${timeslotId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      // Datenverarbeitung und Weiterleitung zur Overview-Komponente oder Parti_Start-Komponente
+      console.log("Time-Slot:", data);
+    })
+    .catch((error) => {
+      console.error("Fehler beim Abrufen des Meetings:", error);
+    });
+};
 
 const CountdownTimer = () => {
   const [countdown, setCountdown] = useState(60000);
