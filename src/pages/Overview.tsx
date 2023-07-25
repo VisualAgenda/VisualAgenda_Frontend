@@ -1,36 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IonContent, IonPage, IonButton, IonText } from "@ionic/react";
-
 import ExploreContainer from "../components/ExploreContainer";
 import "./Overview.css";
-import "./Home";
-import "./Suggestions";
-import "./MeetingStart";
-
-// TODO hier muss dann die daten uebergeben werden oder ein neuer get request gemacht werden auf die API musst mir sagen wie du es willst
-// wenn neuer get request musst du den admin_link oder den user_link uebergeben. aber das waere dann das selbe wie bei home.
+import { useParams } from "react-router-dom";
 
 const Overview: React.FC = () => {
-  const storedNumbers = localStorage.getItem("randomNumbers");
-  const { number1 = 0, number2 = 0 } = storedNumbers
-    ? JSON.parse(storedNumbers)
-    : {};
+  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"','');
+  const userLink = localStorage.getItem("userLink")?.replaceAll('"','');
 
   return (
     <IonPage>
-      <IonContent class="ion-padding">
+      <IonContent className="ion-padding">
         <h2>
-          Agenda <br></br>erstellen
+          Agenda <br /> erstellen
         </h2>
         <IonButton href="/Editing" shape="round" size="large" id="oben">
           genauere Bearbeitung
         </IonButton>
         <IonText>
           <h5>LogIn-ID für Moderator</h5>
-          <p>{number1}</p>
+          <p>{adminLink}</p>
         </IonText>
         <h5>LogIn-ID für Teilnehmer</h5>
-        <p>{number2}</p>
+        <p>{userLink}</p>
         <IonButton href="/Suggestions" shape="round" size="large" id="vorschlag-b">
           Vorschläge
         </IonButton>

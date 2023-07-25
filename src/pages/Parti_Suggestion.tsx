@@ -21,8 +21,6 @@ import ExploreContainer from "../components/ExploreContainer";
 /* TODO Step 1: alle timeslots holen und im dropdown menu anzeigen
         Step 2: TimeslotID nutzen fuer createComment
 
-
-   
 /*  TODO das muss beim navigieren auf diese seite ausgefuehrt werden und meetingID muss halt mit uebergeben werden immer. 
 
       fetch(`http://localhost:3000/meetings/${meetingId}/timeslots`)
@@ -56,10 +54,7 @@ import ExploreContainer from "../components/ExploreContainer";
         console.error("Fehler beim Senden des POST-Requests:", error);
       });
   };
-
-
-
- */
+*/
 
 const Parti_Start: React.FC = () => {
   return (

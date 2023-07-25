@@ -1,10 +1,11 @@
-import React from 'react';
-import { Redirect, Route } from "react-router-dom";
+import React from "react";
 import {
-  IonApp,
-  IonRouterOutlet,
-  setupIonicReact,
-} from "@ionic/react";
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  Switch,
+} from "react-router-dom";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 import Home from "./pages/Home";
@@ -41,38 +42,44 @@ setupIonicReact();
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path="/Home">
-            <Home />
-          </Route>
-          <Route exact path="/Overview">
-            <Overview />
-          </Route>
-          <Route exact path="/Editing">
-            <Editing />
-          </Route>
-          <Route exact path="/Watch">
-            <Watch />
-          </Route>
-          <Route exact path="/ThemaEditing">
-            <ThemaEditing />
-          </Route>
-          <Route exact path="/Suggestions">
-            <Suggestions />
-          </Route>
-          <Route exact path="/MeetingStart">
-            <MeetingStart />
-          </Route>
-          <Route exact path="/Parti_Suggestion">
-            <Parti_Suggestions />
-          </Route>
-          <Route exact path="/Parti_Start">
-            <Parti_Start />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/Home" />
-          </Route>
-        </IonRouterOutlet>
+      <IonRouterOutlet>
+        <Route exact path="/Home">
+          <Home />
+        </Route>
+        <Route exact path="/Overview">
+          <Overview />
+          <Router>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/overview/:meetingId" component={Overview} />
+            </Switch>
+          </Router>
+        </Route>
+        <Route exact path="/Editing">
+          <Editing />
+        </Route>
+        <Route exact path="/Watch">
+          <Watch />
+        </Route>
+        <Route exact path="/ThemaEditing">
+          <ThemaEditing />
+        </Route>
+        <Route exact path="/Suggestions">
+          <Suggestions />
+        </Route>
+        <Route exact path="/MeetingStart">
+          <MeetingStart />
+        </Route>
+        <Route exact path="/Parti_Suggestion">
+          <Parti_Suggestions />
+        </Route>
+        <Route exact path="/Parti_Start">
+          <Parti_Start />
+        </Route>
+        <Route exact path="/">
+          <Redirect to="/Home" />
+        </Route>
+      </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
 );
