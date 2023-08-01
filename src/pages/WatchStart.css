@@ -1,0 +1,59 @@
+.text {
+  position: absolute;
+  z-index: 6;
+  padding-left: 2%;
+  padding-top: 2%;
+}
+
+.bar {
+  position: relative;
+  
+}
+.container_row{
+  padding-bottom: 5%;
+}
+
+#ueberschrift {
+  margin-left: 75px;
+}
+
+#text1{
+  margin-top: 27px;
+  margin-left: 20px;
+}
+
+#balken{
+  margin-left: 20px;
+  
+}
+
+#balkentext{
+  margin-left: 20px;
+  margin-bottom: -10px;
+}
+
+.watch {
+  text-align: center;
+}
+
+#play {
+  color: #aad4cf;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#watchStart{
+  color: #aad4cf;
+}
+
+#stop{
+  color: #aad4cf;
+  margin-top: 10px;
+  margin-left: 145px;
+  cursor: pointer;
+}
+
+#startStop{
+  margin-bottom: -40px;
+  --border-style: none;
+}

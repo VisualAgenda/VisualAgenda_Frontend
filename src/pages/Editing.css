@@ -1,0 +1,48 @@
+#noLine {
+  --border-style: none;
+}
+
+#ins {
+  margin-right: -80px;
+}
+
+#edTopic {
+  text-align: center;
+  cursor: pointer;
+}
+
+#back {
+  font-size: 26px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+#home {
+  font-size: 26px;
+  margin-top: 10px;
+  margin-left: 270px;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+#edExtra {
+  color: rgb(0, 0, 0);
+}
+
+#trash{
+  cursor: pointer;
+}
+
+#EdTimeSlot{
+  cursor: pointer;
+}
+
+.ion-padding h2 {
+  margin-top: 5%;
+  margin-bottom: 10%;
+  font-size: 3rem;
+  color: rgb(0, 0, 0);
+}

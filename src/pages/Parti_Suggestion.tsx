@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonButton,
   IonContent,
@@ -10,71 +10,157 @@ import {
   IonSelect,
   IonSelectOption,
   IonList,
+  IonIcon
 } from "@ionic/react";
 import "./Home.css";
 import "./Parti_Suggestions.css";
 import "./Overview";
-import Background from "../components/Background";
+import BackgroundAll from "../components/BackgroundAll";
 import ExploreContainer from "../components/ExploreContainer";
+import { arrowBackOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 
-//TODO getAlltimeslots, Formular als objekt abspeichern und senden zu createComment.
-/* TODO Step 1: alle timeslots holen und im dropdown menu anzeigen
-        Step 2: TimeslotID nutzen fuer createComment
+const Parti_Suggestion: React.FC = () => {
+  const [timeslots, setTimeslots] = useState<any[]>([]);
+  const [selectedTopic, setSelectedTopic] = useState<string>("Allgemein");
+  const [suggestionText, setSuggestionText] = useState<string>("");
+  const userLink = localStorage.getItem("userLink")?.replaceAll('"', "");
+  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"', "");
+  const [meetingTitle, setMeetingTitle] = useState<string>("");
+  const [meetingDate, setMeetingDate] = useState<string>("");
+  const [meetingTime, setMeetingTime] = useState<string>("");
+  const history = useHistory();
 
-/*  TODO das muss beim navigieren auf diese seite ausgefuehrt werden und meetingID muss halt mit uebergeben werden immer. 
+  // Beim Laden der Komponente die Timeslots für das Meeting abrufen
+  useEffect(() => {
+    fetchTimeslots();
+    fetchMeetingData();
+  }, []);
 
-      fetch(`http://localhost:3000/meetings/${meetingId}/timeslots`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Timeslot-Daten:", data);
-            })
-            .catch((error) => {
-                console.error("Fehler beim Abrufen des Meetings:", error);
-            });
-    };
+  const fetchTimeslots = () => {
+    fetch(`http://localhost:3000/meetings/${userLink}/timeslots`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Timeslot-Daten:", data);
+        setTimeslots(data);
+      })
+      .catch((error) => {
+        console.error("Fehler beim Abrufen der Timeslots:", error);
+      });
+  };
 
+  const handleSelectChange = (event: CustomEvent) => {
+    setSelectedTopic(event.detail.value);
+  };
 
-      const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSuggestionChange = (event: CustomEvent) => {
+    setSuggestionText(event.detail.value);
+    console.log (event.detail.value);
+  };
 
-    // Senden Sie den POST-Request an die API
-    fetch("http://localhost:3000/meetings/${meetingId}/timeslots/${timeslotId}/comments", {
-      method: "POST",
+  const getTimeslotId = (name: String) => {
+    for ( var i=0;i<timeslots.length;i++){
+      if(timeslots[i].topic == name){
+        return timeslots[i].timeslot_id;
+      }
+    }
+  }
+
+  const handleSubmit = () => {
+    if (!selectedTopic || !suggestionText) {
+      // Stellen Sie sicher, dass sowohl ein Thema als auch ein Kommentartext ausgewählt wurden
+      return;}
+    // HTTP POST-Anfrage an den Server, um den Vorschlag zu speichern
+    const timeslotId = getTimeslotId(selectedTopic);
+    fetch(`http://localhost:3000/meetings/${userLink}/timeslots/${timeslotId}/comments`, {
+     method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData), // TODO das ist der ort zum daten mitteilen am besten gibst du von hause aus einen namen und eine zeit mit. Guck dir die datenstruktur nochmal an und besprich mit mir wie es geaendert werden muss.
+      body: JSON.stringify({ comment: suggestionText }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        // Verarbeiten Sie die Antwort der API
-        console.log(data);
+      .then((response) => {
+        if (response.ok) {
+          console.log("Kommentar erfolgreich gespeichert");
+          // Hier können Sie Benachrichtigungen oder Zustandsaktualisierungen vornehmen, um den Benutzer zu informieren
+        } else {
+          console.error("Fehler beim Speichern des Kommentars");
+        }
       })
       .catch((error) => {
-        console.error("Fehler beim Senden des POST-Requests:", error);
+        console.error("Fehler beim Speichern des Kommentars:", error);
       });
   };
-*/
 
-const Parti_Start: React.FC = () => {
+  const fetchMeetingData = () => {
+    fetch(`http://localhost:3000/meetings/${userLink}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setMeetingTitle(data.meeting.name);
+        // Annahme: Das Datum wird als String im Format "YYYY-MM-DD" gespeichert
+        const date = new Date(data.meeting.start_date);
+        // Das Datum im Format "DD.MM.YYYY" anzeigen
+        const formattedDate = `${date.getDate()}.${
+          date.getMonth() + 1
+        }.${date.getFullYear()}`;
+        setMeetingDate(formattedDate);
+
+        // Annahme: Die Uhrzeit wird als String im Format "HH:mm:ss" gespeichert
+        const time = data.meeting.start_date.split("T")[1];
+        // Die Uhrzeit im Format "HH:mm" anzeigen
+        const formattedTime = time.substring(0, 5);
+        setMeetingTime(formattedTime);
+      })
+      .catch((error) => {
+        console.error(
+          "Fehler beim Abrufen der Meeting-Daten aus der Datenbank:",
+          error
+        );
+      });
+  };
+
   return (
     <IonPage>
       <IonContent class="ion-padding">
-        <IonLabel>
-          <h2>Meeting A</h2>
+      <BackgroundAll />
+      <div className="header">
           <IonRow>
-            <IonCol size="4">
-              <p>04.08.2023</p>
+          <IonIcon
+              id="back"
+              icon={arrowBackOutline}
+              onClick={() => history.goBack()}
+            ></IonIcon>
+          </IonRow>
+          <IonLabel>
+          {/* Meeting-Titel und Datum anzeigen */}
+          <h2 id="sugTitel">{meetingTitle}</h2>
+          <IonRow>
+            <IonCol id="sugDate">
+              <p >{meetingDate}</p>
             </IonCol>
             <IonCol>
-              <p>13:30</p>
+              <p>{meetingTime} Uhr</p>
             </IonCol>
           </IonRow>
+        </IonLabel>
+        </div>
+        
+        <IonLabel>
           <IonList>
-            <IonSelect placeholder="Vorschlag zu:">
-              <IonSelectOption value="Allgemein">Allgemein</IonSelectOption>
-              <IonSelectOption value="Thema A">Thema A</IonSelectOption>
-              <IonSelectOption value="Thema B">Thema B</IonSelectOption>
+            <IonSelect
+              id="sugSelect"
+              placeholder="Vorschlag zu:"
+              value={selectedTopic}
+              onIonChange={handleSelectChange}
+            >
+              {timeslots.map((timeslot) => (
+                <IonSelectOption
+                  key={timeslot.timeslot_id}
+                  value={timeslot.topic}
+                >
+                  {timeslot.topic}
+                </IonSelectOption>
+              ))}
             </IonSelect>
           </IonList>
         </IonLabel>
@@ -84,12 +170,19 @@ const Parti_Start: React.FC = () => {
             labelPlacement="floating"
             placeholder="Text eingeben"
             rows={15}
+            value={suggestionText}
+            onIonChange={handleSuggestionChange}
           ></IonTextarea>
         </div>
-        <IonButton id="hallo">Senden</IonButton>
+        <IonButton
+          id="oben" expand="block" shape="round" size="large"  onClick={handleSubmit}
+        >
+          Senden
+        </IonButton>
         <ExploreContainer />
       </IonContent>
     </IonPage>
   );
 };
-export default Parti_Start;
+
+export default Parti_Suggestion;

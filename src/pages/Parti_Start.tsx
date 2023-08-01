@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonButton,
   IonContent,
@@ -7,96 +7,110 @@ import {
   IonCol,
   IonRow,
 } from "@ionic/react";
-import "./Home.css";
+import "./Parti_Start.css";
+import "./Overview.css";
 import "./Parti_Suggestion";
-import Background from "../components/Background";
 import ExploreContainer from "../components/ExploreContainer";
-// TODO Getalltimeslots, abspeichern anzeigen.
-
-//  TODO das muss beim navigieren auf diese seite ausgefuehrt werden und meetingID muss halt mit uebergeben werden immer. 
-/*
-
-      fetch(`http://localhost:3000/meetings/${meetingId}/timeslots`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Timeslot-Daten:", data);
-            })
-            .catch((error) => {
-                console.error("Fehler beim Abrufen des Meetings:", error);
-            });
-    };
-*/
-
+import BackgroundAll from "../components/BackgroundAll";
 
 const Parti_Start: React.FC = () => {
+  const userLink = localStorage.getItem("userLink")?.replaceAll('"', "");
+  const [timeslots, setTimeslots] = useState<any[]>([]);
+  const [meetingTitle, setMeetingTitle] = useState<string>("");
+  const [meetingDate, setMeetingDate] = useState<string>("");
+  const [meetingTime, setMeetingTime] = useState<string>("");
+
+  // Beim Laden der Komponente die Timeslots für das Meeting abrufen
+  useEffect(() => {
+    fetchTimeslots();
+    fetchMeetingData();
+  }, []);
+
+  const fetchTimeslots = () => {
+    fetch(`http://localhost:3000/meetings/${userLink}/timeslots`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTimeslots(data);
+      })
+      .catch((error) => {
+        console.error("Fehler beim Abrufen der Timeslots:", error);
+      });
+  };
+
+  const fetchMeetingData = () => {
+    fetch(`http://localhost:3000/meetings/${userLink}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setMeetingTitle(data.meeting.name);
+        // Annahme: Das Datum wird als String im Format "YYYY-MM-DD" gespeichert
+        const date = new Date(data.meeting.start_date);
+        // Das Datum im Format "DD.MM.YYYY" anzeigen
+        const formattedDate = `${date.getDate()}.${
+          date.getMonth() + 1
+        }.${date.getFullYear()}`;
+        setMeetingDate(formattedDate);
+
+        // Annahme: Die Uhrzeit wird als String im Format "HH:mm:ss" gespeichert
+        const time = data.meeting.start_date.split("T")[1];
+        // Die Uhrzeit im Format "HH:mm" anzeigen
+        const formattedTime = time.substring(0, 5);
+        setMeetingTime(formattedTime);
+      })
+      .catch((error) => {
+        console.error(
+          "Fehler beim Abrufen der Meeting-Daten aus der Datenbank:",
+          error
+        );
+      });
+  };
+
   return (
     <IonPage>
       <IonContent class="ion-padding">
+        <BackgroundAll />
         <IonLabel>
-          <h2>Meeting A</h2>
+          {/* Meeting-Titel und Datum anzeigen */}
+          <h2 id="partiTitel">{meetingTitle}</h2>
           <IonRow>
-            <IonCol size="4">
-              <p>04.08.2023</p>
+            <IonCol>
+              <p id="partiDate">{meetingDate}</p>
             </IonCol>
             <IonCol>
-              <p>13:30</p>
+              <p>{meetingTime} Uhr</p>
             </IonCol>
           </IonRow>
         </IonLabel>
-        <IonRow>
-          <IonCol size="9">
-            <h6>Thema A</h6>
-          </IonCol>
-          <IonCol>
-            <h6>00:14:00</h6>
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol size="9">
-            <h6>Thema B</h6>
-          </IonCol>
-          <IonCol>
-            <h6>00:14:00</h6>
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol size="9">
-            <h6>Thema C</h6>
-          </IonCol>
-          <IonCol>
-            <h6>00:14:00</h6>
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol size="9">
-            <h6>Thema D</h6>
-          </IonCol>
-          <IonCol>
-            <h6>00:14:00</h6>
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol size="9">
-            <h6>Thema F</h6>
-          </IonCol>
-          <IonCol>
-            <h6>00:14:00</h6>
-          </IonCol>
-        </IonRow>
+
+        {timeslots.map((timeslot) => (
+          <IonRow key={timeslot.timeslot_id}>
+            <IonCol size="9">
+              <h6>{timeslot.topic}</h6>
+            </IonCol>
+            <IonCol>
+              <h6>{timeslot.time}:00 Min</h6>{" "}
+              {/* Anzeige der Zeit in Minuten */}
+            </IonCol>
+          </IonRow>
+        ))}
+
         <IonRow>
           <IonCol size="9">
             <h6>Zeit insgesamt:</h6>
           </IonCol>
           <IonCol>
-            <h6>01:00:00</h6>
+            <h6>
+              {timeslots.reduce(
+                (totalTime, timeslot) => totalTime + timeslot.time,
+                0
+              )}
+              :00 Min{/* Gesamtzeit berechnen */}
+            </h6>
           </IonCol>
         </IonRow>
-        <IonButton href="./Parti_Suggestion" id="hallo">
+
+        <IonButton href="./Parti_Suggestion" expand="block" shape="round" size="large" id="oben">
           Vorschlag erstellen
         </IonButton>
-        <IonLabel>
-            <p>Vorschlag abzugeben bis 03.06.2023</p>
-        </IonLabel>
         <ExploreContainer />
       </IonContent>
     </IonPage>

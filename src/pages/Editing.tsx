@@ -1,136 +1,188 @@
-// import React, { useState } from "react";
-// import {
-//   IonContent,
-//   IonButton,
-//   IonList,
-//   IonItem,
-//   IonInput,
-//   IonIcon,
-//   IonReorder,
-//   IonReorderGroup,
-//   ItemReorderEventDetail,
-// } from "@ionic/react";
-// import "./ThemaEditing";
-
-// import { add } from "ionicons/icons";
-
-// // TODO create timeslot and get all timeslots onclick, abspeichern in objekt dann cards ausgeben.
-// /* TODO
-//      Step 1: Alle timeslots anzeigen: Kann man einen for loop fuer nutzen
-//      Step 2: Wenn man auf plus drueckt muss der timeslot gespeichert werden mit createTimeslot
-//  */
-
-// //  TODO das muss beim navigieren auf diese seite ausgefuehrt werden und meetingID muss halt mit uebergeben werden immer. 
-
-
-//       fetch(`http://localhost:3000/meetings/${meetingId}/timeslots`)
-//             .then((response) => response.json())
-//             .then((data) => {
-//                 console.log("Timeslot-Daten:", data);
-//             })
-//             .catch((error) => {
-//                 console.error("Fehler beim Abrufen des Meetings:", error);
-//             });
-//     };
-
-//     const handleSubmit = (event: React.FormEvent) => {
-//     event.preventDefault();
-    
-//     // Senden Sie den POST-Request an die API
-//     fetch("http://localhost:3000/meetings/${meetingId}/timeslots", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(formData), // TODO das ist der ort zum daten mitteilen am besten gibst du von hause aus einen namen und eine zeit mit. Guck dir die datenstruktur nochmal an und besprich mit mir wie es geaendert werden muss.
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         // Verarbeiten Sie die Antwort der API
-//         console.log(data);
-//       })
-//       .catch((error) => {
-//         console.error("Fehler beim Senden des POST-Requests:", error);
-//       });
-//   };
-
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonContent,
   IonButton,
   IonList,
   IonItem,
-  IonInput,
   IonIcon,
-  IonReorder,
-  IonReorderGroup,
-  ItemReorderEventDetail,
-
+  IonRow,
+  IonCol,
+  IonPage,
 } from "@ionic/react";
 import "./ThemaEditing";
-import { add} from 'ionicons/icons';
+import { add } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
+import "./Editing.css";
+import ExploreContainer from "../components/ExploreContainer";
+import { trash, arrowBackOutline, homeOutline } from "ionicons/icons";
+import BackgroundAll from "../components/BackgroundAll";
 
 const Editing: React.FC = () => {
   const [items, setItems] = useState<string[]>([]);
-  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"','');
-  console.log(adminLink);
+  const [fetchItems, setfetchItems] = useState<string[]>([]);
+  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"', "");
+  const [timeslotIds, setTimeslotIds] = useState<number[]>([]);
+  const [timeslotTime, setTimeslotTime] = useState<number[]>([]);
+  const [meetingTitle, setMeetingTitle] = useState("");
+  const history = useHistory();
+
   const addItem = () => {
     const newItem = `Thema ${items.length + 1}`;
     setItems([...items, newItem]);
-    
-  // HTTP POST-Anfrage an den Server, um den Timeslot zu erstellen
-  fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      topic: newItem,
-      // Weitere Eigenschaften des Timeslots können hier hinzugefügt werden
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => console.log(data)) // Hier kannst du die Antwort verarbeiten, wenn nötig
-    .catch((error) =>
-      console.error("Fehler beim Erstellen des Timeslots:", error)
-    );
+    setfetchItems([...fetchItems, newItem]);
   };
 
-  function handleReorder(event: CustomEvent<ItemReorderEventDetail>) {
-    // The `from` and `to` properties contain the index of the item
-    // when the drag started and ended, respectively
-    console.log("Dragged from index", event.detail.from, "to", event.detail.to);
+  useEffect(() => {
+    // Beim Laden der Komponente Timeslots vom Server abrufen
+    fetchTimeslots();
+    fetchMeetingData();
+  }, []);
 
-    // Finish the reorder and position the item in the DOM based on
-    // where the gesture ended. This method can also be called directly
-    // by the reorder group
-    event.detail.complete();
-  }
+  const fetchTimeslots = () => {
+    // HTTP GET-Anfrage an den Server, um die Timeslots abzurufen
+    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Timeslots in der lokalen State-Variable speichern
+        setItems(data.map((timeslot: any) => timeslot.topic));
+        setTimeslotIds(data.map((timeslot: any) => timeslot.timeslot_id));
+        setTimeslotTime(data.map((timeslot: any) => timeslot.time));
+      })
+      .catch((error) =>
+        console.error("Fehler beim Abrufen der Timeslots:", error)
+      );
+  };
+
+  const fetchMeetingData = () => {
+    // HTTP GET-Anfrage an den Server, um die Meeting-Daten abzurufen
+    fetch(`http://localhost:3000/meetings/${adminLink}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Hier den Meeting-Titel setzen
+        setMeetingTitle(data.meeting.name);
+      })
+      .catch((error) =>
+        console.error("Fehler beim Abrufen der Meeting-Daten aus der Datenbank:", error)
+      );
+  };
+
+  const saveTimeslots = () => {
+    // Iteriere durch jeden Timeslot und sende ihn einzeln an den Server
+    fetchItems.forEach((timeslot) => {
+      // HTTP POST-Anfrage an den Server, um den Timeslot zu erstellen
+      fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: timeslot,
+          description: "",
+          presenter: "",
+          time: 0,
+          link: adminLink,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Timeslot erfolgreich gespeichert:", data);
+          // Hier kannst du die Antwort verarbeiten, wenn nötig
+          // Zum Beispiel: Anzeige einer Erfolgsmeldung
+          timeslot = timeslot.replaceAll(" ", "");
+          localStorage.setItem(
+            adminLink + timeslot,
+            JSON.stringify(data.timeslot.timeslot_id)
+          );
+        })
+        .catch((error) =>
+          console.error("Fehler beim Speichern des Timeslots:", error)
+        );
+    });
+
+    // Nach dem Speichern der Timeslots, setze die lokale Liste zurück
+    setfetchItems([]);
+  };
+
+  const handleItemClick = (timeslot: string) => {
+    timeslot = timeslot.replaceAll(" ", "");
+    history.push(`/ThemaEditing?Thema=${timeslot}`);
+  };
+
+  const handleItemDelete = (index: number) => {
+    const timeslotId = timeslotIds[index];
+    // HTTP DELETE-Anfrage an den Server, um den Timeslot zu löschen
+    fetch(
+      `http://localhost:3000/meetings/${adminLink}/timeslots/${timeslotId}`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Timeslot erfolgreich gelöscht:", data);
+        // Hier kannst du die Antwort verarbeiten, wenn nötig
+        // Zum Beispiel: Anzeige einer Erfolgsmeldung, Aktualisieren der Timeslots-Liste
+        const updatedItems = [...items];
+        updatedItems.splice(index, 1);
+        setItems(updatedItems);
+      })
+      .catch((error) =>
+        console.error("Fehler beim Löschen des Timeslots:", error)
+      );
+  };
 
   return (
-    <IonContent class="ion-padding">
-      <h2>Meeting A</h2>
-      <IonList>
-        <IonReorderGroup disabled={false} onIonItemReorder={handleReorder}>
+    <IonPage>
+      <IonContent class="ion-padding">
+        <BackgroundAll />
+        <div className="header">
+          <IonRow>
+          <IonIcon
+              id="back"
+              icon={arrowBackOutline}
+              onClick={() => history.goBack()}
+            ></IonIcon>
+            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/home")}></IonIcon>
+          </IonRow>
+          <h2 id="edTopic" onClick={() => history.push("/MeetingEditing")} >{meetingTitle}</h2>
+        </div>
+        <IonList>
           {items.map((item, index) => (
-            <IonItem key={index} href="/ThemaEditing">
-                <IonInput label={item} placeholder="00:14:00"></IonInput>
-              <IonReorder slot="end"></IonReorder>
+            <IonItem key={index}>
+              <IonCol size="5">
+                <p id="EdTimeSlot" onClick={() => handleItemClick(item)}>{item}</p>
+              </IonCol>
+              <IonCol>
+                <p>{timeslotTime[index]}:00</p>
+              </IonCol>
+              <IonIcon
+                id="trash"
+                icon={trash}
+                slot="end"
+                onClick={() => handleItemDelete(index)}
+              />
             </IonItem>
           ))}
-        </IonReorderGroup>
-      </IonList>
-        <p>Zeit insgesamt: </p>
-      <IonButton onClick={addItem}>
-        <IonIcon slot="icon-only" icon={add}></IonIcon>
-      </IonButton>
-      <IonButton expand="full">
-        Speichern
-      </IonButton>
-    </IonContent>
+        </IonList>
+        <IonButton onClick={addItem} fill="clear" id="edExtra">
+          <IonIcon slot="icon-only" icon={add}></IonIcon>
+        </IonButton>
+        <IonItem id="noLine">
+          <IonCol id="ins">
+            <p>Zeit insgesamt:</p>
+          </IonCol>
+          <IonCol>
+            <p>{timeslotTime.reduce((acc, t) => acc + t, 0)}:00</p>
+          </IonCol>
+        </IonItem>
+        
+        <IonButton expand="full" onClick={saveTimeslots} id="oben">
+          Speichern
+        </IonButton>
+        <ExploreContainer />
+      </IonContent>
+    </IonPage>
   );
 };
 
 export default Editing;
-

@@ -10,13 +10,15 @@ import { IonReactRouter } from "@ionic/react-router";
 
 import Home from "./pages/Home";
 import Overview from "./pages/Overview";
-import Watch from "./pages/Watch";
 import Editing from "./pages/Editing";
 import ThemaEditing from "./pages/ThemaEditing";
 import Suggestions from "./pages/Suggestions";
 import Parti_Suggestions from "./pages/Parti_Suggestion";
 import Parti_Start from "./pages/Parti_Start";
-import MeetingStart from "./pages/MeetingStart";
+
+import WatchStart from "./pages/WatchStart";
+import SuggestionsDetail from "./pages/SuggestionsDetail";
+import MeetingEditing from "./pages/MeetingEditing";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -48,18 +50,12 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/Overview">
           <Overview />
-          <Router>
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/overview/:meetingId" component={Overview} />
-            </Switch>
-          </Router>
         </Route>
         <Route exact path="/Editing">
           <Editing />
         </Route>
-        <Route exact path="/Watch">
-          <Watch />
+        <Route exact path="/MeetingEditing">
+          <MeetingEditing />
         </Route>
         <Route exact path="/ThemaEditing">
           <ThemaEditing />
@@ -67,14 +63,17 @@ const App: React.FC = () => (
         <Route exact path="/Suggestions">
           <Suggestions />
         </Route>
-        <Route exact path="/MeetingStart">
-          <MeetingStart />
-        </Route>
         <Route exact path="/Parti_Suggestion">
           <Parti_Suggestions />
         </Route>
         <Route exact path="/Parti_Start">
           <Parti_Start />
+        </Route>
+        <Route exact path="/WatchStart">
+          <WatchStart />
+        </Route>
+        <Route exact path="/SuggestionsDetail">
+          <SuggestionsDetail />
         </Route>
         <Route exact path="/">
           <Redirect to="/Home" />

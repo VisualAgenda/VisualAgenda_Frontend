@@ -37,6 +37,7 @@
 
 .ellipse1 {
   position: absolute;
+  position: fixed;
   top: 80%;
   left: 0;
   width: 100%;

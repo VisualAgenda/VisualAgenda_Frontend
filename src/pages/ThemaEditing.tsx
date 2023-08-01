@@ -1,84 +1,144 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import {
-    IonContent,
-    IonPage,
-    IonButton,
-    IonInput,
-    IonItem,
+  IonContent,
+  IonPage,
+  IonButton,
+  IonInput,
+  IonItem,
+  IonTextarea,
+  IonRow,
+  IonIcon,
+  IonCol
 } from "@ionic/react";
-
 import ExploreContainer from "../components/ExploreContainer";
-import "./Overview.css";
+import "./ThemaEditing.css";
 import "./Editing";
 import "./Home";
+import BackgroundAll from "../components/BackgroundAll";
+import { arrowBackOutline, homeOutline } from "ionicons/icons";
+import { useLocation, useHistory } from "react-router-dom";
 
-// TODO gettimeslot with id ? dann sollen die objekte angezeigt werden als placeholder und wenn keiner da einfach standard
-/* TODO
-    Step 1 Timeslot holen
-    Step 2 Wenn auf speichern gedrueckt wird muss ein PUT auf die Timeslots und deren ID gemacht werden
-
-    //TODO get timeslot by ID, abspeichern und beschreibung anzeigen dafuer muss die meetingid und die timeslot id mitgegeben werden muss direkt am start gemacht werden
-
-const handleGetTimeslot = () => {
-  fetch(`http://localhost:3000/meetings/${meetingId}/timeslots/${timeslotId}`)
-    .then((response) => response.json())
-    .then((data) => {
-      // Datenverarbeitung und Weiterleitung zur Overview-Komponente oder Parti_Start-Komponente
-      console.log("Time-Slot:", data);
-    })
-    .catch((error) => {
-      console.error("Fehler beim Abrufen des Meetings:", error);
-    });
-};
-
-
-
-    const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    //Senden Sie den POST-Request an die API
-    fetch("http://localhost:3000/meetings/", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // TODO das ist der ort zum daten mitteilen am. Guck dir die datenstruktur nochmal an und besprich mit mir wie es geaendert werden muss.
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            // Verarbeiten Sie die Antwort der API
-            console.log(data);
-        })
-        .catch((error) => {
-            console.error("Fehler beim Senden des POST-Requests:", error);
-        });
-};
-*/
 
 const ThemaEditing: React.FC = () => {
-    return (
-        <IonPage>
-            <IonContent class="ion-padding">
-                <h2>Thema Bearbeiten</h2>
-                <IonItem>
-                    <IonInput placeholder="Thema"></IonInput>
-                </IonItem>
-                <IonItem>
-                    <IonInput placeholder="Vortragender"></IonInput>
-                </IonItem>
-                <IonItem>
-                    <IonInput placeholder="Unterthemen"></IonInput>
-                </IonItem>
-                <IonItem>
-                    <IonInput placeholder="Links"></IonInput>
-                </IonItem>
-                <IonButton href="/Editing" shape="round" expand="block" size="large">
-                    Speichern
-                </IonButton>
-                <ExploreContainer/>
-            </IonContent>
-        </IonPage>
-    );
+  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"', "");
+  
+  const location = useLocation();
+  const [topic, setTopic] = useState("");
+  const [description, setDescription] = useState("");
+  const [presenter, setPresenter] = useState("");
+  const [time, setTime] = useState("");
+  const urlParams = new URLSearchParams(location.search);
+  const themaParam = JSON.stringify(urlParams.get("Thema"))?.replaceAll('"', '');
+  const timeslot_id = localStorage.getItem(adminLink+themaParam);
+  const history = useHistory();
+  console.log(timeslot_id);
+
+  useEffect(() => {
+    // HTTP GET-Anfrage an den Server, um den Timeslot aus der Datenbank abzurufen
+    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots/${timeslot_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTopic(data.topic);
+        setDescription(data.description);
+        setPresenter(data.presenter);
+        setTime(data.time.toString());
+      })
+      .catch((error) =>
+        console.error("Fehler beim Abrufen des Timeslots aus der Datenbank:", error)
+      );
+  }, [adminLink, timeslot_id]);
+
+  const saveTimeslot = () => {
+    // HTTP POST-Anfrage an den Server, um den Timeslot zu erstellen
+    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots/${timeslot_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        topic: topic,
+        presenter: presenter,
+        description: description,
+        time: parseInt(time),
+        // Weitere Eigenschaften des Timeslots können hier hinzugefügt werden
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Timeslot erfolgreich gespeichert:", data);
+        // Hier kannst du die Antwort verarbeiten, wenn nötig
+        // Zum Beispiel: Anzeige einer Erfolgsmeldung, Zurücksetzen der Eingabefelder, etc.
+        setTopic("");
+        setDescription("");
+        setPresenter("");
+        setTime("");
+        localStorage.setItem(adminLink+topic, JSON.stringify(timeslot_id)?.replaceAll('"',''));
+        // localStorage.removeItem(themaParam);
+      })
+      .catch((error) =>
+        console.error("Fehler beim Speichern des Timeslots:", error)
+      );
+  };
+
+  return (
+    <IonPage>
+      <IonContent class="ion-padding">
+      <BackgroundAll />
+      <div className="header">
+          <IonRow>
+          <IonIcon
+              id="back"
+              icon={arrowBackOutline}
+              onClick={() => history.goBack()}
+            ></IonIcon>
+            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/home")}></IonIcon>
+          </IonRow>
+          <h2 id="thTopic">Thema</h2>
+          <h2 id="be">bearbeiten</h2>
+        </div>
+        <IonItem>
+          <IonInput
+            label="Thema:"
+            value={topic}
+            onIonChange={(e) => setTopic(e.detail.value!)}
+          ></IonInput>
+        </IonItem>
+        <IonItem>
+          <IonInput
+            label="Vortragender:"
+            value={presenter}
+            onIonChange={(e) => setPresenter(e.detail.value!)}
+          ></IonInput>
+        </IonItem>
+        <IonItem>
+          <IonTextarea
+            id="unterthemen"
+            label="Unterthemen:"
+            labelPlacement="floating"
+            placeholder="Text eingeben"
+            rows={5}
+          ></IonTextarea>
+        </IonItem>
+        <IonItem>
+          <IonInput
+            label="Länge in Minuten: "
+            value={time}
+            onIonChange={(e) => setTime(e.detail.value!)}
+          ></IonInput>
+        </IonItem>
+        <IonButton
+          shape="round"
+          expand="block"
+          size="large"
+          id="oben"
+          onClick={saveTimeslot}
+        >
+          Speichern
+        </IonButton>
+        <ExploreContainer />
+      </IonContent>
+    </IonPage>
+  );
 };
 
 export default ThemaEditing;

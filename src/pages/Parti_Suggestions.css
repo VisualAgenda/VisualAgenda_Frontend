@@ -1,1 +1,24 @@
- 
+#textbox{
+    margin-left: 10px;
+    margin-bottom: -20px;
+    border: 2px solid rgb(169, 212, 206); /* Hier kannst du die gewünschte Breite und Farbe des Randes einstellen */
+    padding-left: 10px;
+    padding-right: 100px;
+    display: inline-block;
+} 
+
+#sugDate{
+    margin-left: 10px;
+    margin-right: 180px;
+    margin-bottom: 5%;
+}
+
+#sugTitel{
+    margin-left: 20%;
+    margin-bottom: 5%;
+}
+
+#sugSelect{
+    margin-left: 10px;
+    margin-bottom: 3%;
+}
