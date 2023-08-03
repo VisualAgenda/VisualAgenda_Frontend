@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonButton,
   IonContent,
@@ -25,7 +25,6 @@ const Home: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:3000/meetings/${meetingName}`);
       const responseData = await response.json();
-
       if (response.ok) {
         if (responseData.meeting !== null && typeof responseData.meeting === "object") {
         // Meeting wurde gefunden, überprüfe den Admin-Link
@@ -64,7 +63,7 @@ const Home: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: meetingName,
+          name: "Meeting A",
           start_date: new Date().toISOString(), // Übergib hier den Startzeitpunkt des Meetings, den du verwenden möchtest
         }),
       });
@@ -79,7 +78,6 @@ const Home: React.FC = () => {
       console.log("Meeting erfolgreich erstellt:", responseData);
       localStorage.setItem("adminLink", JSON.stringify(responseData.meeting.admin_link));
       localStorage.setItem("userLink", JSON.stringify(responseData.meeting.user_link));
-      // Hier kannst du nach der Erstellung die Weiterleitung zu einer anderen Seite implementieren oder eine Erfolgsmeldung anzeigen.
       // Navigiere zur Übersichtsseite (oder zu einer anderen gewünschten Seite)
       ionRouter.push("/overview");
     } catch (error) {
@@ -89,7 +87,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // Funktion zum Verarbeiten von Eingaben im Textfeld
   
   return (
     <IonPage>
@@ -106,6 +103,7 @@ const Home: React.FC = () => {
           <IonRow>
             <IonCol size="10">
           <IonInput
+            id="idInput"
             aria-label="Custom input"
             placeholder="Id einfügen"
             className="custom"

@@ -1,11 +1,11 @@
 #adminTextbox{
     margin-left: 10px;
     margin-bottom: -20px;
-    border: 2px solid rgb(169, 212, 206); /* Hier kannst du die gewünschte Breite und Farbe des Randes einstellen */
     padding-left: 10px;
-    padding-right: 260px;
-    padding-bottom: 300px;
-    display: inline-block;
+    padding-right: 10px;
+    border: 2px solid rgb(169, 212, 206); /* Hier kannst du die gewünschte Breite und Farbe des Randes einstellen */
+    height: 300px; 
+    width: 340px;
 } 
 
 #sugDeTitel {

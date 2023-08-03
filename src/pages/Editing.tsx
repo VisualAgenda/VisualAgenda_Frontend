@@ -25,7 +25,7 @@ const Editing: React.FC = () => {
   const [timeslotTime, setTimeslotTime] = useState<number[]>([]);
   const [meetingTitle, setMeetingTitle] = useState("");
   const history = useHistory();
-
+  const [isSaved, setIsSaved] = useState(false);
   const addItem = () => {
     const newItem = `Thema ${items.length + 1}`;
     setItems([...items, newItem]);
@@ -79,7 +79,7 @@ const Editing: React.FC = () => {
           topic: timeslot,
           description: "",
           presenter: "",
-          time: 0,
+          time: 5,
           link: adminLink,
         }),
       })
@@ -101,6 +101,10 @@ const Editing: React.FC = () => {
 
     // Nach dem Speichern der Timeslots, setze die lokale Liste zurück
     setfetchItems([]);
+    setIsSaved(true); 
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 5000);
   };
 
   const handleItemClick = (timeslot: string) => {
@@ -130,6 +134,7 @@ const Editing: React.FC = () => {
         console.error("Fehler beim Löschen des Timeslots:", error)
       );
   };
+ 
 
   return (
     <IonPage>
@@ -142,7 +147,7 @@ const Editing: React.FC = () => {
               icon={arrowBackOutline}
               onClick={() => history.goBack()}
             ></IonIcon>
-            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/home")}></IonIcon>
+            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/Overview")}></IonIcon>
           </IonRow>
           <h2 id="edTopic" onClick={() => history.push("/MeetingEditing")} >{meetingTitle}</h2>
         </div>
@@ -153,7 +158,7 @@ const Editing: React.FC = () => {
                 <p id="EdTimeSlot" onClick={() => handleItemClick(item)}>{item}</p>
               </IonCol>
               <IonCol>
-                <p>{timeslotTime[index]}:00</p>
+                <p>{timeslotTime[index] ? timeslotTime[index] : 5}:00</p>
               </IonCol>
               <IonIcon
                 id="trash"
@@ -175,10 +180,14 @@ const Editing: React.FC = () => {
             <p>{timeslotTime.reduce((acc, t) => acc + t, 0)}:00</p>
           </IonCol>
         </IonItem>
-        
         <IonButton expand="full" onClick={saveTimeslots} id="oben">
           Speichern
         </IonButton>
+        {isSaved && (
+          <div>
+            <p>Die Timeslots wurden erfolgreich gespeichert!</p>
+          </div>
+        )}
         <ExploreContainer />
       </IonContent>
     </IonPage>

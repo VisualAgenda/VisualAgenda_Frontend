@@ -66,7 +66,7 @@ const Suggestions: React.FC = () => {
               icon={arrowBackOutline}
               onClick={() => history.goBack()}
             ></IonIcon>
-            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/home")}></IonIcon>
+            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/Overview")}></IonIcon>
           </IonRow>
           <h2 id="sugTopic">Vorschläge</h2>
         </div>

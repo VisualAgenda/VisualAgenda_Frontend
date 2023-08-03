@@ -9,6 +9,7 @@ import {
   IonLabel,
   IonButton,
   IonText,
+  IonTextarea,
 } from "@ionic/react";
 
 import ExploreContainer from "../components/ExploreContainer";
@@ -71,7 +72,7 @@ const Suggestions: React.FC = () => {
   return (
     <IonPage>
       <IonContent class="ion-padding">
-      <BackgroundAll />
+        <BackgroundAll />
         <div className="header">
           <IonRow>
             <IonIcon
@@ -82,7 +83,7 @@ const Suggestions: React.FC = () => {
             <IonIcon
               id="home"
               icon={homeOutline}
-              onClick={() => history.push("/home")}
+              onClick={() => history.push("/Overview")}
             ></IonIcon>
           </IonRow>
           <h3 id="sugDeTitel" onClick={() => history.push("/MeetingEditing")}>
@@ -90,11 +91,15 @@ const Suggestions: React.FC = () => {
           </h3>
         </div>
         <div id="adminTextbox">
-          <IonItem id="noLine">
-                <p>{comment}</p>
-          </IonItem>
-          </div>
-        <IonButton expand="block" shape="round" size="large" id="oben" href="/Editing">
+          <IonTextarea rows={15} value={comment[0]} disabled></IonTextarea>
+        </div>
+        <IonButton
+          expand="block"
+          shape="round"
+          size="large"
+          id="oben"
+          href="/Editing"
+        >
           Meeting bearbeiten
         </IonButton>
         <ExploreContainer />

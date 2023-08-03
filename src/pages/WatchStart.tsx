@@ -8,8 +8,9 @@ import {
   IonText,
   IonItem,
   IonIcon,
+  IonAlert
 } from "@ionic/react";
-import { time, timeOutline } from "ionicons/icons";
+
 import { useHistory } from "react-router-dom";
 import "./WatchStart.css";
 import {
@@ -26,14 +27,18 @@ const WatchStart: React.FC = () => {
   const [activeTimeslotIndex, setActiveTimeslotIndex] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [sumTime, setSumTime] = useState<number>(0);
-  const [smoothTime, setSmoothTime] = useState<number>(0);
   const [timerInterval, setTimerInterval] = useState<any>(null);
+  const [totalInterval, setToatlInterval] = useState<any>(null);
   const [timeList, setTimeList] = useState<number[]>([]);
   const history = useHistory();
   const [totalTime, setTotalTime] = useState<number>(0);
   const [timerStarted, setTimerStarted] = useState<boolean>(false);
-  const factor = 100;
   const [meetingTitle, setMeetingTitle] = useState("");
+  const [showTimeslotAlert, setShowTimeslotAlert] = useState(false); // Zustand für das Anzeigen des Timeslot-Alerts
+  const [timeslotDescription, setTimeslotDescription] = useState<any[]>([]); // Zustand für die Beschreibung des Timeslots
+  const [isPaused, setIsPaused] = useState(false); // Zustand für den Pause-Status des Timers
+  const [isStopped, setIsStopped] = useState(false); // Zustand für den Pause-Status des Timers
+  const [showAlert, setShowAlert] = useState(false); // Zustand für das Anzeigen des Alerts
 
   // Beim Laden der Komponente die Timeslots aus der Datenbank abrufen
   useEffect(() => {
@@ -46,6 +51,7 @@ const WatchStart: React.FC = () => {
       .then((response) => response.json())
       .then((data) => {
         setTimeslots(data);
+        setTimeslotDescription(data.map((timeslot: any) => timeslot.description));
       })
       .catch((error) =>
         console.error("Fehler beim Abrufen der Timeslots:", error)
@@ -61,10 +67,31 @@ const WatchStart: React.FC = () => {
         setMeetingTitle(data.meeting.name);
       })
       .catch((error) =>
-        console.error("Fehler beim Abrufen der Meeting-Daten aus der Datenbank:", error)
+        console.error(
+          "Fehler beim Abrufen der Meeting-Daten aus der Datenbank:",
+          error
+        )
       );
   };
 
+  const resumeTimer = () => {
+    setIsPaused(false);
+  };
+
+  const handleAlertConfirm = () => {
+    // Benutzer hat den Alert bestätigt, das Meeting wird beendet
+    stopTimer();
+    stopTotalTimer();
+    setShowAlert(false);
+    // Hier können Sie zusätzliche Aktionen zum Beenden des Meetings hinzufügen, falls erforderlich.
+    // Zum Beispiel: Speichern der Zeiten oder Durchführung von Cleanup-Aufgaben
+  };
+
+  const handleAlertCancel = () => {
+    // Benutzer hat den Alert abgebrochen, Timer wird fortgesetzt
+    resumeTimer();
+    setShowAlert(false);
+  };
 
   const addNumber = (num: number) => {
     setTimeList([...timeList, num]);
@@ -87,6 +114,12 @@ const WatchStart: React.FC = () => {
   const stopTimer = () => {
     clearInterval(timerInterval);
     setTimerInterval(null);
+  };
+
+  const stopTotalTimer = () => {
+    clearInterval(totalInterval);
+    setTimerInterval(null);
+    setIsStopped(true);
   };
 
   const calculateProgress = (time: number, passedTime: number): number => {
@@ -124,51 +157,22 @@ const WatchStart: React.FC = () => {
       .padStart(2, "0")}`;
   };
 
-
   useEffect(() => {
     const totalTimeslotTime = timeslots.reduce((acc, t) => acc + t.time, 0);
     setTotalTime(totalTimeslotTime);
   }, [timeslots]);
 
-  const progress = calculateProgress(totalTime, sumTime);
-
   const startTimerOnce = () => {
     if (!timerStarted) {
       startTimer();
       setTimerStarted(true);
-      setInterval(() => {
-        setSumTime((prevTime) => prevTime + 1);
-      }, 1000);
+      setToatlInterval(
+        setInterval(() => {
+          setSumTime((prevTime) => prevTime + 1);
+        }, 1000))
     } else {
       startTimer();
     }
-  };
-
-  const handleItemClick = () => {
-    localStorage.setItem(
-      "activeTimeslotIndex",
-      JSON.stringify(activeTimeslotIndex).replaceAll('"', "")
-    );
-    localStorage.setItem(
-      "currentTime",
-      JSON.stringify(currentTime).replaceAll('"', "")
-    );
-    for (let i = 0; i < timeList.length; i++) {
-      let storeKey = "timeList" + timeList[i];
-      localStorage.setItem(
-        storeKey,
-        JSON.stringify(timeList[i]).replaceAll('"', "")
-      );
-    }
-    localStorage.setItem(
-      "totalTime",
-      JSON.stringify(totalTime).replaceAll('"', "")
-    );
-    localStorage.setItem(
-      "sumTime",
-      JSON.stringify(sumTime).replaceAll('"', "")
-    );
-    history.push(`/Watch`);
   };
 
   const getCircleStrokeDasharray = () => {
@@ -182,18 +186,24 @@ const WatchStart: React.FC = () => {
   return (
     <IonPage>
       <IonContent class="ion-padding">
-      <div className="header">
+        <div className="header">
           <IonRow>
-          <IonIcon
+            <IonIcon
               id="back"
               icon={arrowBackOutline}
               onClick={() => history.goBack()}
             ></IonIcon>
-            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/home")}></IonIcon>
+            <IonIcon
+              id="home"
+              icon={homeOutline}
+              onClick={() => history.push("/Overview")}
+            ></IonIcon>
           </IonRow>
-          <h2 id="edTopic" onClick={() => history.push("/MeetingEditing")} >{meetingTitle}</h2>
+          <h2 id="edTopic" onClick={() => history.push("/MeetingEditing")}>
+            {meetingTitle}
+          </h2>
         </div>
-        <div className="watch">
+        <div className="watch" id="present-alert">
           <svg width="180" height="180" viewBox="0 0 200 200">
             <circle
               cx="100"
@@ -225,13 +235,31 @@ const WatchStart: React.FC = () => {
             </text>
           </svg>
         </div>
+        <IonAlert
+        trigger="present-alert"
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Meeting beenden"
+          message="Möchten Sie das Meeting wirklich beenden?"
+          buttons={[
+            {
+              text: "Abbrechen",
+              role: "cancel",
+              handler: handleAlertCancel,
+            },
+            {
+              text: "Beenden",
+              handler: handleAlertConfirm,
+            },
+          ]}
+        />
         <IonText>
           <h3 id="text1">Übersicht</h3>
         </IonText>
         {timeslots.map((timeslot, index) => (
-          <div key={timeslot.timeslot_id}>
+          <div key={timeslot.timeslot_id} id={`descriptionAlert-${index}`}>
             <IonRow id="balkentext">
-              <IonCol size="9">
+              <IonCol size="9" >
                 <p>{timeslot.topic}</p>
               </IonCol>
               <IonCol>
@@ -273,10 +301,27 @@ const WatchStart: React.FC = () => {
                 }}
               />
             </div>
+            <IonAlert
+      trigger={`descriptionAlert-${index}`} // Setze die ID des Triggers entsprechend des Timeslot-Elements
+      isOpen={showTimeslotAlert}
+      onDidDismiss={() => setShowTimeslotAlert(false)}
+      header={`${timeslots[index].topic} Beschreibung`}
+      message={timeslotDescription[index]}
+      buttons={[
+        {
+          text: "Ok",
+          handler: () => {
+            setShowTimeslotAlert(false);
+          },
+        },
+      ]}
+    />
           </div>
         ))}
-
+        
+        
         <IonItem id="startStop">
+        {!isStopped && (
           <IonRow>
             <IonCol>
               <IonIcon
@@ -304,8 +349,9 @@ const WatchStart: React.FC = () => {
               <p id="watchStart">Pause</p>
             </IonCol>
           </IonRow>
+          )}
         </IonItem>
-        {activeTimeslotIndex < timeslots.length - 1 && (
+        {activeTimeslotIndex < timeslots.length - 1 && !isStopped &&(
           <IonButton
             expand="block"
             shape="round"

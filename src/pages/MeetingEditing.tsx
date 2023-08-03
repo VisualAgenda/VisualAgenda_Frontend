@@ -6,21 +6,23 @@ import {
   IonInput,
   IonItem,
   IonDatetime,
+  IonIcon,
+  IonRow
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import "./Overview.css";
 import "./Editing";
 import "./Home";
-import { useLocation } from "react-router-dom";
-import { waitFor } from "@testing-library/react";
+import { useHistory } from "react-router-dom";
+import { arrowBackOutline, homeOutline } from "ionicons/icons";
+
 
 const MeetingEditing: React.FC = () => {
   const adminLink = localStorage.getItem("adminLink")?.replaceAll('"', "");
-  
-  const location = useLocation();
   const [meetingTitle, setMeetingTitle] = useState("");
-  const [meetingDate, setMeetingDate] = useState(""); // Verwende hier einen String für das Datum und die Uhrzeit
-  // Weitere Meeting-Eigenschaften können hier hinzugefügt werden
+  const [meetingDate, setMeetingDate] = useState("");
+  const history = useHistory();
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     // HTTP GET-Anfrage an den Server, um die Meeting-Daten aus der Datenbank abzurufen
@@ -64,6 +66,10 @@ const MeetingEditing: React.FC = () => {
       .catch((error) =>
         console.error("Fehler beim Speichern der Meeting-Daten:", error)
       );
+      setIsSaved(true);
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 5000);
   };
 
   const handleDateChange = (event: CustomEvent) => {
@@ -74,10 +80,21 @@ const MeetingEditing: React.FC = () => {
   return (
     <IonPage>
       <IonContent class="ion-padding">
-        <h2>Meeting bearbeiten</h2>
+      <div className="header">
+          <IonRow>
+          <IonIcon
+              id="back"
+              icon={arrowBackOutline}
+              onClick={() => history.goBack()}
+            ></IonIcon>
+            <IonIcon id="home" icon={homeOutline} onClick={() => history.push("/Overview")}></IonIcon>
+          </IonRow>
+          <h2>Meeting bearbeiten</h2>
+        </div>
+       
         <IonItem>
           <IonInput
-            placeholder="Titel"
+            label="Titel:"
             value={meetingTitle}
             onIonChange={(e) => setMeetingTitle(e.detail.value!)}
           ></IonInput>
@@ -100,6 +117,11 @@ const MeetingEditing: React.FC = () => {
         >
           Speichern
         </IonButton>
+        {isSaved && (
+          <div>
+            <p>Meetingdaten wurden erfolgreich gespeichert!</p>
+          </div>
+        )}
         <ExploreContainer />
       </IonContent>
     </IonPage>
