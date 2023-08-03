@@ -39,6 +39,8 @@ const WatchStart: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false); // Zustand für den Pause-Status des Timers
   const [isStopped, setIsStopped] = useState(false); // Zustand für den Pause-Status des Timers
   const [showAlert, setShowAlert] = useState(false); // Zustand für das Anzeigen des Alerts
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
+
 
   // Beim Laden der Komponente die Timeslots aus der Datenbank abrufen
   useEffect(() => {
@@ -47,7 +49,7 @@ const WatchStart: React.FC = () => {
   }, []);
 
   const fetchTimeslots = () => {
-    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}/timeslots`)
       .then((response) => response.json())
       .then((data) => {
         setTimeslots(data);
@@ -60,7 +62,7 @@ const WatchStart: React.FC = () => {
 
   const fetchMeetingData = () => {
     // HTTP GET-Anfrage an den Server, um die Meeting-Daten abzurufen
-    fetch(`http://localhost:3000/meetings/${adminLink}`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}`)
       .then((response) => response.json())
       .then((data) => {
         // Hier den Meeting-Titel setzen
@@ -318,7 +320,6 @@ const WatchStart: React.FC = () => {
     />
           </div>
         ))}
-        
         
         <IonItem id="startStop">
         {!isStopped && (

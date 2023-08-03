@@ -34,12 +34,13 @@ const ThemaEditing: React.FC = () => {
   const timeslot_id = localStorage.getItem(adminLink + themaParam);
   const history = useHistory();
   const [isSaved, setIsSaved] = useState(false);
-  console.log(timeslot_id);
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
+
 
   useEffect(() => {
     // HTTP GET-Anfrage an den Server, um den Timeslot aus der Datenbank abzurufen
     fetch(
-      `http://localhost:3000/meetings/${adminLink}/timeslots/${timeslot_id}`
+      `http://${ipAdress}:3000/meetings/${adminLink}/timeslots/${timeslot_id}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -59,7 +60,7 @@ const ThemaEditing: React.FC = () => {
   const saveTimeslot = () => {
     // HTTP POST-Anfrage an den Server, um den Timeslot zu erstellen
     fetch(
-      `http://localhost:3000/meetings/${adminLink}/timeslots/${timeslot_id}`,
+      `http://${ipAdress}:3000/meetings/${adminLink}/timeslots/${timeslot_id}`,
       {
         method: "PUT",
         headers: {

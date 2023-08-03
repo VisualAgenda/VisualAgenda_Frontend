@@ -16,6 +16,8 @@ import { arrowForwardCircleOutline } from 'ionicons/icons';
 const Home: React.FC = () => {
   const [meetingName, setMeetingName] = useState(""); // Zustand für den Namen des Meetings
   const ionRouter = useIonRouter();
+  const ipAdress = "localhost";
+  localStorage.setItem("ipAdress", ipAdress);
 
   const handleInputChange = (e: CustomEvent<InputChangeEventDetail>) => {
     setMeetingName(e.detail.value!); // Aktualisiere den Zustand mit dem eingegebenen Namen
@@ -23,7 +25,7 @@ const Home: React.FC = () => {
 
   const handleGetMeeting = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/meetings/${meetingName}`);
+      const response = await fetch(`http://${ipAdress}:3000/meetings/${meetingName}`);
       const responseData = await response.json();
       if (response.ok) {
         if (responseData.meeting !== null && typeof responseData.meeting === "object") {
@@ -57,7 +59,7 @@ const Home: React.FC = () => {
   const createMeeting = async () => {
     try {
       // Führe einen API-Aufruf zum Server aus, um das Meeting zu erstellen
-      const response = await fetch("http://localhost:3000/meetings", {
+      const response = await fetch(`http://${ipAdress}:3000/meetings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,17 +103,17 @@ const Home: React.FC = () => {
 
         <IonItem>
           <IonRow>
-            <IonCol size="10">
+            <IonCol size="10" id="idIput">
           <IonInput
-            id="idInput"
             aria-label="Custom input"
             placeholder="Id einfügen"
             className="custom"
             value={meetingName}
             onIonChange={handleInputChange}
           ></IonInput>
+        
           </IonCol>
-          <IonCol>
+          <IonCol id="icHome">
         <IonIcon id="ic" icon={ arrowForwardCircleOutline } onClick={handleGetMeeting}></IonIcon>
         </IonCol>
           </IonRow>

@@ -39,6 +39,7 @@ const Suggestions: React.FC = () => {
     .filter((comment) => comment.comment_id == commentParam)
     .map((filteredComment) => filteredComment.comment);
   const history = useHistory();
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
 
   // Beim Laden der Komponente die Timeslots für das Meeting abrufen
   useEffect(() => {
@@ -47,7 +48,7 @@ const Suggestions: React.FC = () => {
   }, []);
 
   const fetchComments = () => {
-    fetch(`http://localhost:3000/meetings/${adminLink}/comments`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}/comments`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Kommentare:", data);
@@ -59,7 +60,7 @@ const Suggestions: React.FC = () => {
   };
 
   const fetchTimeslots = () => {
-    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}/timeslots`)
       .then((response) => response.json())
       .then((data) => {
         setTimeslots(data);

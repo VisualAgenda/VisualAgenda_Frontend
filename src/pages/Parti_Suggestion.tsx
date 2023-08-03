@@ -25,10 +25,10 @@ const Parti_Suggestion: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>("Allgemein");
   const [suggestionText, setSuggestionText] = useState<string>("");
   const userLink = localStorage.getItem("userLink")?.replaceAll('"', "");
-  const adminLink = localStorage.getItem("adminLink")?.replaceAll('"', "");
   const [meetingTitle, setMeetingTitle] = useState<string>("");
   const [meetingDate, setMeetingDate] = useState<string>("");
   const [meetingTime, setMeetingTime] = useState<string>("");
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
   const history = useHistory();
 
   // Beim Laden der Komponente die Timeslots für das Meeting abrufen
@@ -38,7 +38,7 @@ const Parti_Suggestion: React.FC = () => {
   }, []);
 
   const fetchTimeslots = () => {
-    fetch(`http://localhost:3000/meetings/${userLink}/timeslots`)
+    fetch(`http://${ipAdress}:3000/meetings/${userLink}/timeslots`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Timeslot-Daten:", data);
@@ -72,7 +72,7 @@ const Parti_Suggestion: React.FC = () => {
       return;}
     // HTTP POST-Anfrage an den Server, um den Vorschlag zu speichern
     const timeslotId = getTimeslotId(selectedTopic);
-    fetch(`http://localhost:3000/meetings/${userLink}/timeslots/${timeslotId}/comments`, {
+    fetch(`http://${ipAdress}:3000/meetings/${userLink}/timeslots/${timeslotId}/comments`, {
      method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,7 +93,7 @@ const Parti_Suggestion: React.FC = () => {
   };
 
   const fetchMeetingData = () => {
-    fetch(`http://localhost:3000/meetings/${userLink}`)
+    fetch(`http://${ipAdress}:3000/meetings/${userLink}`)
       .then((response) => response.json())
       .then((data) => {
         setMeetingTitle(data.meeting.name);

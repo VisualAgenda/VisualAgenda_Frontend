@@ -23,14 +23,15 @@ const MeetingEditing: React.FC = () => {
   const [meetingDate, setMeetingDate] = useState("");
   const history = useHistory();
   const [isSaved, setIsSaved] = useState(false);
-
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
+  
   useEffect(() => {
     // HTTP GET-Anfrage an den Server, um die Meeting-Daten aus der Datenbank abzurufen
     fetchMeetingData();
   }, [adminLink]);
 
   const fetchMeetingData = () => {
-    fetch(`http://localhost:3000/meetings/${adminLink}`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}`)
       .then((response) => response.json())
       .then((data) => {
         // Hier die empfangenen Daten setzen
@@ -45,7 +46,7 @@ const MeetingEditing: React.FC = () => {
 
   const saveMeetingData = () => {
     // HTTP PUT-Anfrage an den Server, um die Meeting-Daten in der Datenbank zu aktualisieren
-    fetch(`http://localhost:3000/meetings/${adminLink}`, {
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

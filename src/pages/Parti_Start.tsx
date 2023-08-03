@@ -19,6 +19,7 @@ const Parti_Start: React.FC = () => {
   const [meetingTitle, setMeetingTitle] = useState<string>("");
   const [meetingDate, setMeetingDate] = useState<string>("");
   const [meetingTime, setMeetingTime] = useState<string>("");
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
 
   // Beim Laden der Komponente die Timeslots für das Meeting abrufen
   useEffect(() => {
@@ -27,7 +28,7 @@ const Parti_Start: React.FC = () => {
   }, []);
 
   const fetchTimeslots = () => {
-    fetch(`http://localhost:3000/meetings/${userLink}/timeslots`)
+    fetch(`http://${ipAdress}:3000/meetings/${userLink}/timeslots`)
       .then((response) => response.json())
       .then((data) => {
         setTimeslots(data);
@@ -38,7 +39,7 @@ const Parti_Start: React.FC = () => {
   };
 
   const fetchMeetingData = () => {
-    fetch(`http://localhost:3000/meetings/${userLink}`)
+    fetch(`http://${ipAdress}:3000/meetings/${userLink}`)
       .then((response) => response.json())
       .then((data) => {
         setMeetingTitle(data.meeting.name);

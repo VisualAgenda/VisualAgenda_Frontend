@@ -31,6 +31,7 @@ const Editing: React.FC = () => {
     setItems([...items, newItem]);
     setfetchItems([...fetchItems, newItem]);
   };
+  const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
 
   useEffect(() => {
     // Beim Laden der Komponente Timeslots vom Server abrufen
@@ -40,7 +41,7 @@ const Editing: React.FC = () => {
 
   const fetchTimeslots = () => {
     // HTTP GET-Anfrage an den Server, um die Timeslots abzurufen
-    fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}/timeslots`)
       .then((response) => response.json())
       .then((data) => {
         // Timeslots in der lokalen State-Variable speichern
@@ -55,7 +56,7 @@ const Editing: React.FC = () => {
 
   const fetchMeetingData = () => {
     // HTTP GET-Anfrage an den Server, um die Meeting-Daten abzurufen
-    fetch(`http://localhost:3000/meetings/${adminLink}`)
+    fetch(`http://${ipAdress}:3000/meetings/${adminLink}`)
       .then((response) => response.json())
       .then((data) => {
         // Hier den Meeting-Titel setzen
@@ -70,7 +71,7 @@ const Editing: React.FC = () => {
     // Iteriere durch jeden Timeslot und sende ihn einzeln an den Server
     fetchItems.forEach((timeslot) => {
       // HTTP POST-Anfrage an den Server, um den Timeslot zu erstellen
-      fetch(`http://localhost:3000/meetings/${adminLink}/timeslots`, {
+      fetch(`http://${ipAdress}:3000/meetings/${adminLink}/timeslots`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +117,7 @@ const Editing: React.FC = () => {
     const timeslotId = timeslotIds[index];
     // HTTP DELETE-Anfrage an den Server, um den Timeslot zu löschen
     fetch(
-      `http://localhost:3000/meetings/${adminLink}/timeslots/${timeslotId}`,
+      `http://${ipAdress}:3000/meetings/${adminLink}/timeslots/${timeslotId}`,
       {
         method: "DELETE",
       }
