@@ -178,11 +178,19 @@ const WatchStart: React.FC = () => {
   };
 
   const getCircleStrokeDasharray = () => {
+    if(sumTime>=totalTime*60){
+      return "1 0";
+    }
     const circumference = 2 * Math.PI * 90;
     const remainingPercentage = sumTime / (totalTime * 60);
     const filledLength = remainingPercentage * circumference;
     const emptyLength = circumference - filledLength;
     return `${filledLength} ${emptyLength}`;
+  };
+
+  const handleHomeConfirm = () => {
+    // Redirect to the "Overview" page
+    history.push("/Overview");
   };
 
   return (
@@ -193,18 +201,54 @@ const WatchStart: React.FC = () => {
             <IonIcon
               id="back"
               icon={arrowBackOutline}
-              onClick={() => history.goBack()}
+            
             ></IonIcon>
             <IonIcon
               id="home"
               icon={homeOutline}
-              onClick={() => history.push("/Overview")}
+              // onClick={() => history.push("/Overview")}
             ></IonIcon>
           </IonRow>
-          <h2 id="edTopic" onClick={() => history.push("/MeetingEditing")}>
+          <h2 id="edTopic">
             {meetingTitle}
           </h2>
         </div>
+        <IonAlert
+        trigger="home"
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Meeting beenden"
+          message="Möchten Sie das Meeting wirklich beenden?"
+          buttons={[
+            {
+              text: "Abbrechen",
+              role: "cancel",
+              handler: handleAlertCancel,
+            },
+            {
+              text: "Beenden",
+              handler: handleHomeConfirm,
+            },
+          ]}
+        />
+        <IonAlert
+        trigger="back"
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Meeting beenden"
+          message="Möchten Sie das Meeting wirklich beenden?"
+          buttons={[
+            {
+              text: "Abbrechen",
+              role: "cancel",
+              handler: handleAlertCancel,
+            },
+            {
+              text: "Beenden",
+              handler: handleHomeConfirm,
+            },
+          ]}
+        />
         <div className="watch" id="present-alert">
           <svg width="180" height="180" viewBox="0 0 200 200">
             <circle
@@ -220,7 +264,7 @@ const WatchStart: React.FC = () => {
               cy="100"
               r="90"
               fill="none"
-              stroke="#0dd148"
+              stroke= {sumTime < totalTime*60 ? "#0dd148" : "#d10d0d" }
               strokeWidth="20"
               strokeDasharray={getCircleStrokeDasharray()}
               strokeDashoffset="0"

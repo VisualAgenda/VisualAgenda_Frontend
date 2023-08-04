@@ -30,6 +30,7 @@ const Parti_Suggestion: React.FC = () => {
   const [meetingTime, setMeetingTime] = useState<string>("");
   const ipAdress = localStorage.getItem("ipAdress")?.replaceAll('"','');
   const history = useHistory();
+  const [isSaved, setIsSaved] = useState(false);
 
   // Beim Laden der Komponente die Timeslots für das Meeting abrufen
   useEffect(() => {
@@ -90,6 +91,10 @@ const Parti_Suggestion: React.FC = () => {
       .catch((error) => {
         console.error("Fehler beim Speichern des Kommentars:", error);
       });
+      setIsSaved(true); 
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 5000);
   };
 
   const fetchMeetingData = () => {
@@ -179,6 +184,12 @@ const Parti_Suggestion: React.FC = () => {
         >
           Senden
         </IonButton>
+        
+        {isSaved && (
+          <div>
+            <p>Der Kommentar wurde erfolgreich gespeichert!</p>
+          </div>
+        )}
         <ExploreContainer />
       </IonContent>
     </IonPage>

@@ -16,7 +16,7 @@ import { arrowForwardCircleOutline } from 'ionicons/icons';
 const Home: React.FC = () => {
   const [meetingName, setMeetingName] = useState(""); // Zustand für den Namen des Meetings
   const ionRouter = useIonRouter();
-  const ipAdress = "localhost";
+  const ipAdress = "localhost"; //Hier die IP-Adresse ändern
   localStorage.setItem("ipAdress", ipAdress);
 
   const handleInputChange = (e: CustomEvent<InputChangeEventDetail>) => {
